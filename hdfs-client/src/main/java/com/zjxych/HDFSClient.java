@@ -1,5 +1,6 @@
 package com.zjxych;
 
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
@@ -7,6 +8,9 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.io.MapFile;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
+import org.apache.hadoop.util.ReflectionUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -55,10 +59,27 @@ public class HDFSClient {
         if (fs.exists(filePath)) {
             fs.delete(filePath, true);
         }
-        OutputStream outputStream = fs.create(filePath);
+//        OutputStream outputStream = fs.create(filePath);
         MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(Text.class), MapFile.Writer.valueClass(Text.class));
         writer.append(new Text(key), new Text(content));
         writer.close();
         fs.close();
+    }
+    /** deprecated */
+    public void readMapFile(String path) throws IOException{
+        FileSystem fs = FileSystem.get(conf);
+        MapFile.Reader reader = null;
+        reader = new MapFile.Reader(fs, path.toString(),conf);
+        Writable key = (Writable)ReflectionUtils.newInstance(reader.getKeyClass().asSubclass(WritableComparable.class), conf);
+        Writable value = (Writable)ReflectionUtils.newInstance(reader.getValueClass().asSubclass(Writable.class), conf);
+        while(reader.next((WritableComparable)key,value)){
+            System.out.println("key:"+key);
+            System.out.println("value:"+value);
+        }
+    }
+    public void downloadFile(){}
+    public void deleteMapFile(String name) throws IOException{
+        FileSystem fs = FileSystem.get(conf);
+        MapFile.delete(fs,name);
     }
 }
