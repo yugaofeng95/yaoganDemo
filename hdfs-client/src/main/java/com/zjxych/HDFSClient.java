@@ -2,6 +2,8 @@ package com.zjxych;
 
 
 import com.sun.corba.se.spi.ior.Writeable;
+import com.zjxych.infoKey.infoValue;
+import com.zjxych.infoKey.singleBandInfoKey;
 import com.zjxych.rasterkyes.SingleBandMapKey;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -11,10 +13,7 @@ import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.ReflectionUtils;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +79,18 @@ public class HDFSClient {
         writer.close();
         fs.close();
     }
+    public void writeRasterInfo(String path,String[] rasterInfo) throws IOException{
+        singleBandInfoKey key = new singleBandInfoKey();
+        infoValue value = new infoValue(rasterInfo);
+        FileSystem fs = FileSystem.get(conf);
+        Path filePath = new Path(path);
+        MapFile.Writer writer = new MapFile.Writer(conf,filePath,MapFile.Writer.keyClass(singleBandInfoKey.class),MapFile.Writer.valueClass(String.class));
+        key.set(1,1);
+        writer.append(key,value);
+        writer.close();
+        fs.close();
 
+    }
     public int readRasterPixel(String path, int level, int row, int column, int band) throws IOException {
         WritableComparable key = new SingleBandMapKey(level, row, column, band);
         // BytesWritable key = new BytesWritable(new byte[]{(byte) level, (byte) row, (byte) column, (byte) band});
