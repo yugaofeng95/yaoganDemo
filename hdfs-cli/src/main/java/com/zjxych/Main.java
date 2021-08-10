@@ -53,8 +53,9 @@ public class Main {
         System.out.println("top left y:"+transform[3]);
         System.out.println("rotation:"+transform[4]);
         System.out.println("n--s pixel resolution:"+transform[5]);
+        String projection = dataset.GetProjection();
+        System.out.println("projection:"+projection);
         dataset.delete();
-
         gdal.GDALDestroyDriverManager();
         // client.writeRasterPixel("/testRR", 0, 0, 0, 0, 23);
         // client.writeRasterPixel("/testRR", 0, 0, 1, 0, 65);
