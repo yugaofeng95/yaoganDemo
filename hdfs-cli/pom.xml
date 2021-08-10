@@ -9,11 +9,13 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <!--suppress UnresolvedMavenProperty -->
         <distDir>${maven.multiModuleProjectDirectory}/dist</distDir>
+        <gdal.bindir>D:\Hadoop\hadoop-tools\hdfs-cli\src\main\java\com\zjxych</gdal.bindir>
     </properties>
     <dependencies>
         <dependency>
