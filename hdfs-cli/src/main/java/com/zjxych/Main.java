@@ -9,6 +9,7 @@ import org.gdal.gdal.Driver;
 import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
 
+
 public class Main {
 
     public static void main(String[] args) throws IOException {
@@ -18,31 +19,32 @@ public class Main {
 //        System.out.println(client.readRasterPixel("/testRR", 0, 0, 1, 0));
 //        System.out.println(client.readRasterPixel("/testRR", 0, 0, 2, 0));
 //        client.readRaster("/testRR");
-        //storage info:
-//        String[] arr = {"ss","ss"};
-//        client.writeRasterInfo("teat8-9",arr);
-//        client.writeRasterInfo("test89");
+
+
+
+
+
 
         //readTiff
         gdal.AllRegister();
 
-//        String rasterFilePath = "\\\\192.168.2.2\\GISData\\1800_dlgh\\zj_dem.tif";
         String rasterFilePath = "D:\\romote sense Pro\\zj_dem.tif";
 
         Dataset dataset = gdal.Open(rasterFilePath);
         if (dataset == null) {
             System.out.println("GDAL read error: " + gdal.GetLastErrorMsg());
         }
+        assert dataset != null;
         Driver driver = dataset.GetDriver();
         System.out.println("Driver: " + driver.getShortName() + "/" + driver.getLongName());
 
         // 读取影像信息
         int xSize = dataset.getRasterXSize();
         int ySzie = dataset.getRasterYSize();
-        int nBandCount = dataset.getRasterCount();
-        System.out.println("xSize is " + xSize + ",\nySize is" + ySzie + ",\nbandscount is " + nBandCount);
-        int layercount = dataset.GetLayerCount();
-        System.out.println("layercount is "+layercount);
+        int BandCount = dataset.getRasterCount();
+        System.out.println("xSize is " + xSize + ",\nySize is " + ySzie + ",\nbandscount is " + BandCount);
+        int layers = dataset.GetLayerCount();
+        System.out.println("layercount is "+layers);
         Band band = dataset.GetRasterBand(1);
         int type = band.GetRasterDataType();
         System.out.println("type is "+type);
@@ -57,6 +59,10 @@ public class Main {
         System.out.println("projection:"+projection);
         dataset.delete();
         gdal.GDALDestroyDriverManager();
+
+
+
+
         // client.writeRasterPixel("/testRR", 0, 0, 0, 0, 23);
         // client.writeRasterPixel("/testRR", 0, 0, 1, 0, 65);
         // client.writeRasterPixel("/testRR", 0, 0, 2, 0, 83);
@@ -67,5 +73,12 @@ public class Main {
 //        for (LocatedFileStatus fileStatus : client.ListFiles("/")) {
 //            System.out.println(fileStatus.getPath());
 //        }
+
+
+
+
+        //store tiff data in HDFS
+
+
     }
 }

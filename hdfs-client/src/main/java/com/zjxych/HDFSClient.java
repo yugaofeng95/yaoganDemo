@@ -1,6 +1,7 @@
 package com.zjxych;
 
 
+import com.jcraft.jsch.IO;
 import com.sun.corba.se.spi.ior.Writeable;
 import com.zjxych.infoKey.infoValue;
 import com.zjxych.infoKey.singleBandInfoKey;
@@ -12,6 +13,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.ReflectionUtils;
+import org.gdal.gdal.Dataset;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -63,6 +65,29 @@ public class HDFSClient {
     //     fs.close();
     // }
 
+    //写入元数据
+    public void writerInfo(String path, infoValue value, int level,Dataset dataset) throws IOException{
+        singleBandInfoKey key = new singleBandInfoKey(level);
+//        IntWritable value = new IntWritable();
+        FileSystem fs = FileSystem.get(conf);
+        Path filePath = new Path(path);
+        MapFile.Writer writer = new MapFile.Writer(conf,filePath, MapFile.Writer.keyClass(singleBandInfoKey.class),MapFile.Writer.valueClass(IntWritable.class));
+        value.setValue(dataset);
+        writer.append(key,value);
+    }
+    public String readInfo(Path dir, int level) throws IOException {
+        WritableComparable key = new singleBandInfoKey(level);
+//        String[] value = new String[100];
+        FileSystem fs = FileSystem.get(conf);
+        MapFile.Reader reader = new MapFile.Reader(dir,conf);
+        Writable value = (Writable) ReflectionUtils.newInstance(reader.getValueClass().asSubclass(Writable.class), conf);
+        reader.get(key,value);
+        return value.toString();
+
+    }
+
+
+    //写入栅格数据
     public void writeRaster(String path, int[] rasterValues) throws IOException {
         SingleBandMapKey key = new SingleBandMapKey();
         // BytesWritable key = new BytesWritable(new byte[]{(byte) level, (byte) row, (byte) column, (byte) band});

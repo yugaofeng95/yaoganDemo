@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class singleBandInfoKey extends BinaryComparable implements WritableComparable<BinaryComparable> {
     private int level;
-    private int band;
+//    private int band;
 //    private String[] rasterInfo;
 //    private String[] bandInfo;
 
@@ -26,9 +26,9 @@ public class singleBandInfoKey extends BinaryComparable implements WritableCompa
         return new byte[0];
     }
 
-    public singleBandInfoKey(int level, int band) {
+    public singleBandInfoKey(int level) {
         this.level = level;
-        this.band = band;
+//        this.band = band;
 //        this.rasterInfo = rasterInfo;
 //        this.bandInfo = bandInfo;
     }
