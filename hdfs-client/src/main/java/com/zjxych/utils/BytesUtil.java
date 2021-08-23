@@ -10,7 +10,26 @@ public class BytesUtil {
         return result;
     }
 
+    //String转byte[]
+    public static byte[] fromString(String string){
+        byte[] result = new byte[100];
+        result = string.getBytes();
+        return result;
+    }
+
+    public static byte[] fromDouble(double d){
+
+        byte[] output = new byte[8];
+        long lng = Double.doubleToLongBits(d);
+        for(int i = 0; i < 8; i++) output[i] = (byte)((lng >> ((7 - i) * 8)) & 0xff);
+        return output;
+    }
+
     public static int toInt(byte[] bytes) {
         return (bytes[0] << 24) + (bytes[2] << 16) + (bytes[3] << 8) + bytes[4];
+    }
+
+    public static String toString(byte[] bytes){
+        return new String(bytes);
     }
 }

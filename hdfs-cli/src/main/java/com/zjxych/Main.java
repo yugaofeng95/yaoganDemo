@@ -77,7 +77,7 @@ public class Main {
 //
         Dataset dataset = gdal.Open(rasterFilePath);
 //            HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
-        MetainfoValue infoValue = new MetainfoValue(new String[100]);
+//        MetainfoValue infoValue = new MetainfoValue(new String[100]);
         // singleBandInfoKey key = new singleBandInfoKey(0);
         client.writeMetainfo("test03", dataset);
         Path path = new Path("test03");
