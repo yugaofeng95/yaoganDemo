@@ -8,7 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class singleBandInfoKey extends BinaryComparable implements WritableComparable<BinaryComparable> {
-    private int level;
+    public int level;
 //    private int band;
 //    private String[] rasterInfo;
 //    private String[] bandInfo;

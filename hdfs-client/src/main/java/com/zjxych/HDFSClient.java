@@ -17,6 +17,7 @@ import org.gdal.gdal.Dataset;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HDFSClient {
@@ -66,23 +67,43 @@ public class HDFSClient {
     // }
 
     //写入元数据
-    public void writerInfo(String path, infoValue value, int level,Dataset dataset) throws IOException{
-        singleBandInfoKey key = new singleBandInfoKey(level);
+    public void writerInfo(String path, infoValue value, singleBandInfoKey key,Dataset dataset) throws IOException{
+//        singleBandInfoKey key = new singleBandInfoKey(level);
 //        IntWritable value = new IntWritable();
         FileSystem fs = FileSystem.get(conf);
         Path filePath = new Path(path);
-        MapFile.Writer writer = new MapFile.Writer(conf,filePath, MapFile.Writer.keyClass(singleBandInfoKey.class),MapFile.Writer.valueClass(IntWritable.class));
+        MapFile.Writer writer = new MapFile.Writer(conf,filePath, MapFile.Writer.keyClass(singleBandInfoKey.class),MapFile.Writer.valueClass(infoValue.class));
         value.setValue(dataset);
+//        System.out.println(value);
+        for(int i=0; i<12;i++){
+            System.out.println(value.getValue()[i]);
+        }
         writer.append(key,value);
+        writer.close();
+        fs.close();
     }
-    public String readInfo(Path dir, int level) throws IOException {
-        WritableComparable key = new singleBandInfoKey(level);
+    //读取元数据
+    public void readInfo(Path dir, singleBandInfoKey key)throws IOException{
+//        singleBandInfoKey key = new singleBandInfoKey(level);
 //        String[] value = new String[100];
         FileSystem fs = FileSystem.get(conf);
         MapFile.Reader reader = new MapFile.Reader(dir,conf);
-        Writable value = (Writable) ReflectionUtils.newInstance(reader.getValueClass().asSubclass(Writable.class), conf);
-        reader.get(key,value);
-        return value.toString();
+        infoValue value =new infoValue();
+        System.out.println("key:"+key.level);
+        if(reader.seek(key)) {
+            value = (infoValue) reader.get(key, value);
+//        System.out.println(reader.seek(key));
+            System.out.println("value:");
+            System.out.println(value.getValue()[0]);
+        }
+//           for(int i=0; i<12;i++){
+//                System.out.println((value.getValue()[i]));
+//            }
+
+
+        reader.close();
+        fs.close();
+//        return value.toString();
 
     }
 
