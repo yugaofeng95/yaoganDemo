@@ -2,15 +2,9 @@ package com.zjxych;
 
 import java.io.*;
 
-import java.util.Arrays;
-
-import com.zjxych.infoKey.infoValue;
-import com.zjxych.infoKey.singleBandInfoKey;
-import org.gdal.gdal.Band;
+import com.zjxych.metainfo.MetainfoValue;
 import org.gdal.gdal.Dataset;
-import org.gdal.gdal.Driver;
 import org.gdal.gdal.gdal;
-import org.gdal.gdalconst.gdalconstConstants;
 import org.apache.hadoop.fs.Path;
 
 
@@ -18,15 +12,11 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
-        client.writeRaster("/testRR", new int[]{16, 65, 83});
-        System.out.println(client.readRasterPixel("/testRR", 0, 0, 0, 0));
-        System.out.println(client.readRasterPixel("/testRR", 0, 0, 1, 0));
-        System.out.println(client.readRasterPixel("/testRR", 0, 0, 2, 0));
-        client.readRaster("/testRR");
-
-
-
-
+        // client.writeRaster("/testRR", new int[]{16, 65, 83});
+        // System.out.println(client.readRasterPixel("/testRR", 0, 0, 0, 0));
+        // System.out.println(client.readRasterPixel("/testRR", 0, 0, 1, 0));
+        // System.out.println(client.readRasterPixel("/testRR", 0, 0, 2, 0));
+        // client.readRaster("/testRR");
 
 
         //readTiff
@@ -67,7 +57,6 @@ public class Main {
 //        }
 
 
-
         // client.writeRasterPixel("/testRR", 0, 0, 0, 0, 23);
         // client.writeRasterPixel("/testRR", 0, 0, 1, 0, 65);
         // client.writeRasterPixel("/testRR", 0, 0, 2, 0, 83);
@@ -80,23 +69,18 @@ public class Main {
 //        }
 
 
-
-
         //store tiff data in HDFS
 
-//            gdal.AllRegister();
+        gdal.AllRegister();
 //
-//            String rasterFilePath = "D:\\romote sense Pro\\zj_dem.tif";
+        String rasterFilePath = "D:\\romote sense Pro\\zj_dem.tif";
 //
-//            Dataset dataset = gdal.Open(rasterFilePath);
+        Dataset dataset = gdal.Open(rasterFilePath);
 //            HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
-//            infoValue infoValue = new infoValue(new String[100]);
-//            singleBandInfoKey key = new singleBandInfoKey(0);
-//            client.writerInfo("test03",infoValue,key,dataset);
-//            Path path = new Path("test03");
-//            client.readInfo(path,key);
-
-
-
+        MetainfoValue infoValue = new MetainfoValue(new String[100]);
+        // singleBandInfoKey key = new singleBandInfoKey(0);
+        client.writeMetainfo("test03", dataset);
+        Path path = new Path("test03");
+        client.readInfo(path);
     }
 }

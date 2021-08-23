@@ -1,26 +1,23 @@
-package com.zjxych.infoKey;
+package com.zjxych.metainfo;
 
-import org.apache.hadoop.io.BinaryComparable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.io.WritableComparable;
 import org.gdal.gdal.Dataset;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class infoValue implements Writable {
+public class MetainfoValue implements Writable {
     public String[] value =new String[100];
 
-    public infoValue() {
+    public MetainfoValue() {
     }
 
-    public infoValue(String[] value) {
+    public MetainfoValue(String[] value) {
         this.value = value;
     }
-    public void setValue(Dataset dataset){
 
+    public void setValue(Dataset dataset){
         value[0] = String.valueOf(dataset.getRasterXSize());
         value[1] = String.valueOf(dataset.getRasterYSize());
         value[2] = String.valueOf(dataset.getRasterCount());
@@ -33,7 +30,6 @@ public class infoValue implements Writable {
         value[9] = String.valueOf(dataset.GetGeoTransform()[4]);
         value[10] = String.valueOf(dataset.GetGeoTransform()[5]);
         value[11] = dataset.GetProjection();
-
     }
 
 

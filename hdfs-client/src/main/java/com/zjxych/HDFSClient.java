@@ -1,10 +1,8 @@
 package com.zjxych;
 
 
-import com.jcraft.jsch.IO;
-import com.sun.corba.se.spi.ior.Writeable;
-import com.zjxych.infoKey.infoValue;
-import com.zjxych.infoKey.singleBandInfoKey;
+import com.zjxych.metainfo.MetainfoValue;
+import com.zjxych.metainfo.Metainfo;
 import com.zjxych.rasterkyes.SingleBandMapKey;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -17,8 +15,9 @@ import org.gdal.gdal.Dataset;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HDFSClient {
     private Configuration conf = new Configuration();
@@ -67,44 +66,55 @@ public class HDFSClient {
     // }
 
     //写入元数据
-    public void writerInfo(String path, infoValue value, singleBandInfoKey key,Dataset dataset) throws IOException{
+    public void writerInfo(String path, MetainfoValue value, SingleBandMapKey key, Dataset dataset) throws IOException {
 //        singleBandInfoKey key = new singleBandInfoKey(level);
 //        IntWritable value = new IntWritable();
         FileSystem fs = FileSystem.get(conf);
         Path filePath = new Path(path);
-        MapFile.Writer writer = new MapFile.Writer(conf,filePath, MapFile.Writer.keyClass(singleBandInfoKey.class),MapFile.Writer.valueClass(infoValue.class));
+        MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(SingleBandMapKey.class), MapFile.Writer.valueClass(MetainfoValue.class));
         value.setValue(dataset);
 //        System.out.println(value);
-        for(int i=0; i<12;i++){
+        for (int i = 0; i < 12; i++) {
             System.out.println(value.getValue()[i]);
         }
-        writer.append(key,value);
+        writer.append(key, value);
         writer.close();
         fs.close();
     }
+
+    public void writeMetainfo(String path, Dataset dataset) throws IOException {
+        FileSystem fs = FileSystem.get(conf);
+        Path filePath = new Path(path);
+        Metainfo metainfoWriter = new Metainfo(dataset);
+        Text key = new Text();
+        BytesWritable value = new BytesWritable();
+        MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(Text.class), MapFile.Writer.valueClass(BytesWritable.class));
+        for (Map.Entry<String, byte[]> pair : metainfoWriter.getWriteMap().entrySet()) {
+            key.set(pair.getKey());
+            value.set(pair.getValue(), 0, pair.getValue().length);
+            writer.append(key, value);
+        }
+        writer.append(key, value);
+        writer.close();
+        fs.close();
+    }
+
     //读取元数据
-    public void readInfo(Path dir, singleBandInfoKey key)throws IOException{
+    public Metainfo readInfo(Path dir) throws IOException {
 //        singleBandInfoKey key = new singleBandInfoKey(level);
 //        String[] value = new String[100];
         FileSystem fs = FileSystem.get(conf);
-        MapFile.Reader reader = new MapFile.Reader(dir,conf);
-        infoValue value =new infoValue();
-        System.out.println("key:"+key.level);
-        if(reader.seek(key)) {
-            value = (infoValue) reader.get(key, value);
-//        System.out.println(reader.seek(key));
-            System.out.println("value:");
-            System.out.println(value.getValue()[0]);
+        Text key = new Text();
+        BytesWritable value = new BytesWritable();
+        MapFile.Reader reader = new MapFile.Reader(dir, conf);
+        Map<String, byte[]> map = new HashMap<>();
+        while (reader.next(key, value)) {
+            map.put(key.toString(), value.getBytes());
         }
-//           for(int i=0; i<12;i++){
-//                System.out.println((value.getValue()[i]));
-//            }
-
-
+        Metainfo writer = new Metainfo(map);
         reader.close();
         fs.close();
-//        return value.toString();
-
+        return writer;
     }
 
 
@@ -125,18 +135,20 @@ public class HDFSClient {
         writer.close();
         fs.close();
     }
-    public void writeRasterInfo(String path,String[] rasterInfo) throws IOException{
-        singleBandInfoKey key = new singleBandInfoKey();
-        infoValue value = new infoValue(rasterInfo);
+
+    public void writeRasterInfo(String path, String[] rasterInfo) throws IOException {
+        SingleBandMapKey key = new SingleBandMapKey();
+        MetainfoValue value = new MetainfoValue(rasterInfo);
         FileSystem fs = FileSystem.get(conf);
         Path filePath = new Path(path);
-        MapFile.Writer writer = new MapFile.Writer(conf,filePath,MapFile.Writer.keyClass(singleBandInfoKey.class),MapFile.Writer.valueClass(String.class));
-        key.set(1,1);
-        writer.append(key,value);
+        MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(SingleBandMapKey.class), MapFile.Writer.valueClass(String.class));
+        // key.set(1, 1);
+        writer.append(key, value);
         writer.close();
         fs.close();
 
     }
+
     public int readRasterPixel(String path, int level, int row, int column, int band) throws IOException {
         WritableComparable key = new SingleBandMapKey(level, row, column, band);
         // BytesWritable key = new BytesWritable(new byte[]{(byte) level, (byte) row, (byte) column, (byte) band});
