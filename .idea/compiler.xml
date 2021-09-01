@@ -6,13 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="hdfs-client" />
         <module name="hdfs-cli" />
+        <module name="test" />
+        <module name="hdfs-client" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="hdfs-cli" target="8" />
       <module name="hdfs-client" target="8" />
+      <module name="test" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

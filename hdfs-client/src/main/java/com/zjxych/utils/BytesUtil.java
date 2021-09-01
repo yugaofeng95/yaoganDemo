@@ -29,6 +29,13 @@ public class BytesUtil {
         return (bytes[0] << 24) + (bytes[2] << 16) + (bytes[3] << 8) + bytes[4];
     }
 
+    public static double toDouble(byte[] bytes){
+        long value = 0;
+        for (int i = 0; i < 8; i++) { value |= ((long) (bytes[i] & 0xff)) << (8 * i);
+        }
+        return Double.longBitsToDouble(value);
+    }
+
     public static String toString(byte[] bytes){
         return new String(bytes);
     }

@@ -1,6 +1,5 @@
 package com.zjxych.metainfo;
 
-import com.zjxych.HDFSClient;
 import com.zjxych.utils.BytesUtil;
 import org.gdal.gdal.Dataset;
 
@@ -18,9 +17,10 @@ public class Metainfo {
     private final String southRotationKey = "southRotation";
     private final String nsPixelResolutionKey = "nsPixelResolution";
     private final String projectionKey = "projection";
+
     private int bands;//波段数
-    private int resolutionX; //X方向像素值
-    private int resolutionY;//y方向像素值
+    private double resolutionX; //X方向像素值
+    private double resolutionY;//y方向像素值
     private double topLeftX;//左上角X坐标
     private double topLeftY;//左上角Y坐标
     private double wePixelResolution;//东西方向上的像素分辨率
@@ -47,22 +47,24 @@ public class Metainfo {
 
     public Metainfo(Map<String, byte[]> map) {
 
-        this.resolutionX = BytesUtil.toInt(map.get(resolutionXKey));
-        this.resolutionY = BytesUtil.toInt(map.get(resolutionYKey));
+        this.resolutionX = BytesUtil.toDouble(map.get(resolutionXKey));
+        this.resolutionY = BytesUtil.toDouble(map.get(resolutionYKey));
+//
         this.bands = BytesUtil.toInt(map.get(bandskey));
-        this.topLeftX = BytesUtil.toInt(map.get(topLeftXKey));
-        this.wePixelResolution = BytesUtil.toInt(map.get(wePixelResolutionKey));
-        this.northRotation = BytesUtil.toInt(map.get(northRotationKey));
-        this.topLeftY = BytesUtil.toInt(map.get(topLeftYKey));
-        this.southRotation = BytesUtil.toInt(map.get(southRotationKey));
-        this.nsPixelResolution = BytesUtil.toInt(map.get(nsPixelResolutionKey));
+        this.topLeftX = BytesUtil.toDouble(map.get(topLeftXKey));
+        this.wePixelResolution = BytesUtil.toDouble(map.get(wePixelResolutionKey));
+        this.northRotation = BytesUtil.toDouble(map.get(northRotationKey));
+        this.topLeftY = BytesUtil.toDouble(map.get(topLeftYKey));
+        this.southRotation = BytesUtil.toDouble(map.get(southRotationKey));
+        this.nsPixelResolution = BytesUtil.toDouble(map.get(nsPixelResolutionKey));
         this.projection = BytesUtil.toString(map.get(projectionKey));
     }
 
     public Map<String, byte[]> getWriteMap() {
         Map<String, byte[]> writeMap = new HashMap<>();
-        writeMap.put(resolutionXKey, BytesUtil.fromInt(resolutionX));
-        writeMap.put(resolutionYKey,BytesUtil.fromInt(resolutionY));
+
+        writeMap.put(resolutionXKey, BytesUtil.fromDouble(resolutionX));
+        writeMap.put(resolutionYKey,BytesUtil.fromDouble(resolutionY));
         writeMap.put(bandskey,BytesUtil.fromInt(bands));
         writeMap.put(topLeftXKey,BytesUtil.fromDouble(topLeftX));
         writeMap.put(wePixelResolutionKey,BytesUtil.fromDouble(wePixelResolution));

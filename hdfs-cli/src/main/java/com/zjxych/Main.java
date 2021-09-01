@@ -2,6 +2,7 @@ package com.zjxych;
 
 import java.io.*;
 
+import com.zjxych.metainfo.Metainfo;
 import com.zjxych.metainfo.MetainfoValue;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
@@ -79,8 +80,13 @@ public class Main {
 //            HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
 //        MetainfoValue infoValue = new MetainfoValue(new String[100]);
         // singleBandInfoKey key = new singleBandInfoKey(0);
-        client.writeMetainfo("test03", dataset);
-        Path path = new Path("test03");
-        client.readInfo(path);
+
+        client.writeMetainfo("test05", dataset);
+
+//        Metainfo metainfoWriter = new Metainfo(dataset);
+//        System.out.println(metainfoWriter.getWriteMap());
+
+//        Path path = new Path("test04");
+//        client.readInfo(path);
     }
 }

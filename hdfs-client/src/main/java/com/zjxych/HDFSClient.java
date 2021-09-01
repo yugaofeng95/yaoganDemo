@@ -4,6 +4,7 @@ package com.zjxych;
 import com.zjxych.metainfo.MetainfoValue;
 import com.zjxych.metainfo.Metainfo;
 import com.zjxych.rasterkyes.SingleBandMapKey;
+import com.zjxych.utils.sort;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
@@ -14,10 +15,7 @@ import org.apache.hadoop.util.ReflectionUtils;
 import org.gdal.gdal.Dataset;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HDFSClient {
     private Configuration conf = new Configuration();
@@ -66,35 +64,43 @@ public class HDFSClient {
     // }
 
     //写入元数据
-    public void writerInfo(String path, MetainfoValue value, SingleBandMapKey key, Dataset dataset) throws IOException {
-//        singleBandInfoKey key = new singleBandInfoKey(level);
-//        IntWritable value = new IntWritable();
-        FileSystem fs = FileSystem.get(conf);
-        Path filePath = new Path(path);
-        MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(SingleBandMapKey.class), MapFile.Writer.valueClass(MetainfoValue.class));
-        value.setValue(dataset);
-//        System.out.println(value);
-        for (int i = 0; i < 12; i++) {
-            System.out.println(value.getValue()[i]);
-        }
-        writer.append(key, value);
-        writer.close();
-        fs.close();
-    }
+//    public void writerInfo(String path, MetainfoValue value, SingleBandMapKey key, Dataset dataset) throws IOException {
+//        FileSystem fs = FileSystem.get(conf);
+//        Path filePath = new Path(path);
+//        MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(SingleBandMapKey.class), MapFile.Writer.valueClass(MetainfoValue.class));
+//        value.setValue(dataset);
+//        for (int i = 0; i < 12; i++) {
+//            System.out.println(value.getValue()[i]);
+//        }
+//        writer.append(key, value);
+//        writer.close();
+//        fs.close();
+//    }
 
     public void writeMetainfo(String path, Dataset dataset) throws IOException {
         FileSystem fs = FileSystem.get(conf);
         Path filePath = new Path(path);
         Metainfo metainfoWriter = new Metainfo(dataset);
+        Map<String,byte[]> writerMap = metainfoWriter.getWriteMap();
+        Map<String,byte[]> resultMap = sort.sortMap(writerMap);
         Text key = new Text();
         BytesWritable value = new BytesWritable();
         MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(Text.class), MapFile.Writer.valueClass(BytesWritable.class));
-        for (Map.Entry<String, byte[]> pair : metainfoWriter.getWriteMap().entrySet()) {
+        for (Map.Entry<String, byte[]> pair : resultMap.entrySet()) {
             key.set(pair.getKey());
             value.set(pair.getValue(), 0, pair.getValue().length);
             writer.append(key, value);
         }
-        writer.append(key, value);
+//        Set<Map.Entry<String,byte[]>> entrySet = writerMap.entrySet();
+//        Iterator<Map.Entry<String,byte[]>> it = entrySet.iterator();
+//        while(it.hasNext()){
+//            Map.Entry<String,byte[]> entry = it.next();
+//            key.set(entry.getKey());
+//            value.set(entry.getValue(),0,entry.getValue().length);
+//            writer.append(key,value);
+//        }
+
+//        writer.append(key, value);
         writer.close();
         fs.close();
     }
@@ -134,6 +140,12 @@ public class HDFSClient {
         // writer.append(key, value);
         writer.close();
         fs.close();
+    }
+
+    //存储tiff图片
+    public void writerImage(String path,Dataset dataset) throws IOException{
+        FileSystem fs = FileSystem.get(conf);
+        Path filePath = new Path(path);
     }
 
     public void writeRasterInfo(String path, String[] rasterInfo) throws IOException {
