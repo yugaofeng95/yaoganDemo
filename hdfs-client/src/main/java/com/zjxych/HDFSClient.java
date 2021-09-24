@@ -123,7 +123,7 @@ public class HDFSClient {
             map.put(key.toString(), value.getBytes());
         }
         Metainfo writer = new Metainfo(map);
-        System.out.println(writer);
+//        System.out.println(writer);
         writer.show();
 
 
@@ -151,25 +151,41 @@ public class HDFSClient {
         fs.close();
     }
 
-    //存储tiff图片
+    //按波段存储tiff图片
     public void writerImage(String path,Dataset dataset) throws IOException{
         FileSystem fs = FileSystem.get(conf);
         Path filePath = new Path(path);
-
-        Band band = dataset.GetRasterBand(1);
+        int band = 1;
+        Band bands = dataset.GetRasterBand(1);
         int xSize = dataset.getRasterXSize();
         int ySize = dataset.getRasterYSize();
         int[] rasterValues = new int[xSize*ySize];
+        bands.ReadRaster(0,0,xSize,ySize,rasterValues);
 
-
-        band.ReadRaster(0,0,xSize,ySize,rasterValues);
+        Text key = new Text();
+        IntWritable value = new IntWritable();
+        MapFile.Writer writer = new MapFile.Writer(conf, filePath, MapFile.Writer.keyClass(Text.class), MapFile.Writer.valueClass(BytesWritable.class));
+        key.set(String.valueOf(band));
+        for(int i=0;i<xSize*ySize;i++){
+            value.set(rasterValues[i]);
+        }
+        writer.append(key,value);
+        writer.close();
+        fs.close();
 
 
 
 
     }
-    public void readImage(String path) throws IOException{
-
+    //按路径，波段读取图像byte数组
+    public int readImage(String path,int i) throws IOException{
+        Path filePath = new Path(path);
+        FileSystem fs = FileSystem.get(conf);
+        Text key = new Text();
+        IntWritable value = new IntWritable();
+        MapFile.Reader reader = new MapFile.Reader(filePath, conf);
+        reader.get(key,value);
+        return value.get();
     }
 
 
