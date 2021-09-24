@@ -1,18 +1,23 @@
 package com.zjxych;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 
 import com.zjxych.metainfo.Metainfo;
 import com.zjxych.metainfo.MetainfoValue;
+import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
 import org.apache.hadoop.fs.Path;
+import org.gdal.gdalconst.gdalconst;
 
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
+//        HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
         // client.writeRaster("/testRR", new int[]{16, 65, 83});
         // System.out.println(client.readRasterPixel("/testRR", 0, 0, 0, 0));
         // System.out.println(client.readRasterPixel("/testRR", 0, 0, 1, 0));
@@ -34,59 +39,53 @@ public class Main {
 //            Driver driver = dataset.GetDriver();
 //            System.out.println("Driver: " + driver.getShortName() + "/" + driver.getLongName());
 //
-//            // 读取影像信息
-//            int xSize = dataset.getRasterXSize();
-//            int ySzie = dataset.getRasterYSize();
-//            int BandCount = dataset.getRasterCount();
-//            System.out.println("xSize is " + xSize + ",\nySize is " + ySzie + ",\nbandscount is " + BandCount);
-//            int layers = dataset.GetLayerCount();
-//            System.out.println("layercount is " + layers);
-//            Band band = dataset.GetRasterBand(1);
-//            int type = band.GetRasterDataType();
-//            System.out.println("type is " + type);
-//            double[] transform = dataset.GetGeoTransform();
-//            System.out.println("top left x:" + transform[0]);
-//            System.out.println("w--e pixel resolution:" + transform[1]);
-//            System.out.println("rotation:" + transform[2]);
-//            System.out.println("top left y:" + transform[3]);
-//            System.out.println("rotation:" + transform[4]);
-//            System.out.println("n--s pixel resolution:" + transform[5]);
-//            String projection = dataset.GetProjection();
-//            System.out.println("projection:" + projection);
-//            dataset.delete();
-//            gdal.GDALDestroyDriverManager();
-//        }
+
 
 
         // client.writeRasterPixel("/testRR", 0, 0, 0, 0, 23);
         // client.writeRasterPixel("/testRR", 0, 0, 1, 0, 65);
         // client.writeRasterPixel("/testRR", 0, 0, 2, 0, 83);
-//        client.WriteFile("/user/hadoop/test1","test8-5");
-//         client.WriteMapFile("/user/hadoop/500","keyTest2","6666");
-//        client.deleteMapFile("12345");
-//           client.readMapFile("/user/hadoop/500");
-//        for (LocatedFileStatus fileStatus : client.ListFiles("/")) {
-//            System.out.println(fileStatus.getPath());
-//        }
 
 
-        //store tiff data in HDFS
+        //写入影像元数据
+//        HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
+//        gdal.AllRegister();
+//        String rasterFilePath = "D:\\romote sense Pro\\zj_dem.tif";
+//        Dataset dataset = gdal.Open(rasterFilePath);
+//        client.writeMetainfo("test09", dataset);
 
+
+//        读取影像元数据
+        HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
         gdal.AllRegister();
-//
+        gdal.SetConfigOption("gdal_FILENAME_IS_UTF8", "YES");
+
         String rasterFilePath = "D:\\romote sense Pro\\zj_dem.tif";
-//
         Dataset dataset = gdal.Open(rasterFilePath);
-//            HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
-//        MetainfoValue infoValue = new MetainfoValue(new String[100]);
-        // singleBandInfoKey key = new singleBandInfoKey(0);
+        client.readInfo("test09");
+        System.out.println(dataset.getRasterXSize());
+        System.out.println(dataset.getRasterCount());
 
-        client.writeMetainfo("test05", dataset);
 
-//        Metainfo metainfoWriter = new Metainfo(dataset);
-//        System.out.println(metainfoWriter.getWriteMap());
+        //写入影像数据
+//        HDFSClient client = new HDFSClient("hadoop", "192.168.1.183", 9000);
+//        gdal.AllRegister();
+//        String rasterFilePath = "D:\\romote sense Pro\\zj_dem.tif";
+//        Dataset dataset = gdal.Open(rasterFilePath);
+////        client.writerImage("test07",dataset);
+//        Band band = dataset.GetRasterBand(1);
+//        int xSize = dataset.getRasterXSize();
+//        int ySize = dataset.getRasterYSize();
+//        int[] rasterValues = new int[xSize*ySize];
+//
+//
+//        band.ReadRaster(0,0,xSize,ySize,rasterValues);
+//        for (int i=0; i<10;i++){
+//            System.out.println(rasterValues[i]);
+//        }
+//
+//
 
-//        Path path = new Path("test04");
-//        client.readInfo(path);
+
     }
 }

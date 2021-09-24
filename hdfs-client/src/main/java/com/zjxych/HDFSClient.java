@@ -4,6 +4,7 @@ package com.zjxych;
 import com.zjxych.metainfo.MetainfoValue;
 import com.zjxych.metainfo.Metainfo;
 import com.zjxych.rasterkyes.SingleBandMapKey;
+import com.zjxych.utils.BytesUtil;
 import com.zjxych.utils.sort;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -12,7 +13,9 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.ReflectionUtils;
+import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
+import org.gdal.gdalconst.gdalconst;
 
 import java.io.*;
 import java.util.*;
@@ -106,26 +109,32 @@ public class HDFSClient {
     }
 
     //读取元数据
-    public Metainfo readInfo(Path dir) throws IOException {
+    public void readInfo(String path) throws IOException {
 //        singleBandInfoKey key = new singleBandInfoKey(level);
 //        String[] value = new String[100];
+//        Map<String,String> metaMap = new HashMap<>();
+        Path filePath = new Path(path);
         FileSystem fs = FileSystem.get(conf);
         Text key = new Text();
         BytesWritable value = new BytesWritable();
-        MapFile.Reader reader = new MapFile.Reader(dir, conf);
+        MapFile.Reader reader = new MapFile.Reader(filePath, conf);
         Map<String, byte[]> map = new HashMap<>();
         while (reader.next(key, value)) {
             map.put(key.toString(), value.getBytes());
         }
         Metainfo writer = new Metainfo(map);
+        System.out.println(writer);
+        writer.show();
+
+
         reader.close();
         fs.close();
-        return writer;
+//        return metaMap;
     }
 
 
     //写入栅格数据
-    public void writeRaster(String path, int[] rasterValues) throws IOException {
+    public  void writeRaster(String path, int[] rasterValues) throws IOException {
         SingleBandMapKey key = new SingleBandMapKey();
         // BytesWritable key = new BytesWritable(new byte[]{(byte) level, (byte) row, (byte) column, (byte) band});
         IntWritable value = new IntWritable();
@@ -146,7 +155,23 @@ public class HDFSClient {
     public void writerImage(String path,Dataset dataset) throws IOException{
         FileSystem fs = FileSystem.get(conf);
         Path filePath = new Path(path);
+
+        Band band = dataset.GetRasterBand(1);
+        int xSize = dataset.getRasterXSize();
+        int ySize = dataset.getRasterYSize();
+        int[] rasterValues = new int[xSize*ySize];
+
+
+        band.ReadRaster(0,0,xSize,ySize,rasterValues);
+
+
+
+
     }
+    public void readImage(String path) throws IOException{
+
+    }
+
 
     public void writeRasterInfo(String path, String[] rasterInfo) throws IOException {
         SingleBandMapKey key = new SingleBandMapKey();

@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/hdfs-cli/hdfs-cli.iml" filepath="$PROJECT_DIR$/hdfs-cli/hdfs-cli.iml" />
       <module fileurl="file://$PROJECT_DIR$/hdfs-client/hdfs-client.iml" filepath="$PROJECT_DIR$/hdfs-client/hdfs-client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../typora/test/test.iml" filepath="$PROJECT_DIR$/../../typora/test/test.iml" />
     </modules>
   </component>
 </project>
